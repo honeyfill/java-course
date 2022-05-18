@@ -70,7 +70,7 @@ public class CovidReporterController {
 
 
 
-	//TODO(*): Implement file downloading ==========================================================================
+	//TODO(**): Implement file downloading ==========================================================================
 	/**
 	 * GET endpoint for path "reports/{reportId}/download".
 	 * Returns a ResponseEntity with status '200 OK' containing data for file downloading.
