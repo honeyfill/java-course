@@ -1,7 +1,7 @@
 package edu.au.covidreporter.service;
 
 import edu.au.covidreporter.dto.CreateReportParametersDto;
-import edu.au.covidreporter.model.ReportEntity;
+import edu.au.covidreporter.model.CovidDataEntity;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class CsvFileService {
 	 * @param data report data selected from DB
 	 * @return new file's name
 	 */
-	public String saveReportToFile(CreateReportParametersDto parameters, List<ReportEntity> data) {
+	public String saveReportToFile(CreateReportParametersDto parameters, List<CovidDataEntity> data) {
 		String fileName = createFileName(parameters);
 
 		/*
