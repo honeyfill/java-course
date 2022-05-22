@@ -1,15 +1,21 @@
 package edu.au.covidreporter.repository;
 
+import edu.au.covidreporter.model.ReportEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
 /**
  * Spring Data Repository for ReportEntity
  */
-//TODO: declare as a Repository
-public interface ReportRepository /* TODO: extend JpaRepository interface with proper type parameters */ {
+@Repository
+public interface ReportRepository extends JpaRepository<ReportEntity, Integer> {
 
-	/*
-	TODO:
-	 - place all methods to request data from 'report' DB table here (if you need any extra methods besides already
-	 defined in the JpaRepository interface)
-	 */
+    @Query("select tab " +
+            "from edu.au.covidreporter.model.ReportEntity as tab " +
+            "order by tab.fileName asc")
+    public List<ReportEntity> getAllReports();
 
 }

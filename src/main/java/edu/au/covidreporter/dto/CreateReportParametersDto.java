@@ -1,24 +1,38 @@
 package edu.au.covidreporter.dto;
 
+import edu.au.covidreporter.validator.FromDateBeforeToDate;
+import edu.au.covidreporter.validator.RealDate;
+import org.springframework.data.util.Pair;
+
+import javax.validation.GroupSequence;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.StringJoiner;
 
 /**
  * DTO for incoming parameters for report creation.
  */
-//TODO(*): validation: fromDate is before toDate
+interface FieldChecks {};
+interface PatternChecks {};
+interface NotBlankChecks {};
+interface ClassInvariantChecks {};
+
+
+@GroupSequence({NotBlankChecks.class, PatternChecks.class, FieldChecks.class, ClassInvariantChecks.class, CreateReportParametersDto.class})
+@FromDateBeforeToDate(params = { "fromDate", "toDate" }, groups = ClassInvariantChecks.class)
 public class CreateReportParametersDto {
 
-	//TODO: validation: not blank
+	@NotBlank(groups = FieldChecks.class)
 	private String country;
 
-	//TODO: validation: not blank
-	//TODO: validation: matches pattern "^\\d{4}-\\d{2}-\\d{2}$"
-	//TODO(*): validation: this is a real date (the pattern above will accepts, for example, '9999-99-99')
+	@RealDate(groups = FieldChecks.class)
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", groups = PatternChecks.class)
+    @NotBlank(groups = NotBlankChecks.class)
 	private String fromDate;
 
-	//TODO: validation: not blank
-	//TODO: validation: matches pattern "^\\d{4}-\\d{2}-\\d{2}$"
-	//TODO(*): validation: this is a real date (the pattern above accepts, for example, '9999-99-99')
+	@RealDate(groups = FieldChecks.class)
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", groups = PatternChecks.class)
+    @NotBlank(groups = NotBlankChecks.class)
 	private String toDate;
 
 	public String getCountry() {

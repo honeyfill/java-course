@@ -2,12 +2,22 @@ package edu.au.covidreporter.service;
 
 import edu.au.covidreporter.dto.CreateReportParametersDto;
 import edu.au.covidreporter.model.CovidDataEntity;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
-//TODO: declare as a Service
+@Service("csvFileService")
 public class CsvFileService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsvFileService.class);
+    
 	private static final List<String> HEADER = List.of(
 			"date_year",
 			"date_month",
@@ -21,7 +31,7 @@ public class CsvFileService {
 			"recovered_diff"
 	);
 
-	//TODO: inject value of the 'edu.au.report.base-path' property from the 'application.yml' file
+    @Value("${edu.au.report.base-path}")
 	private String basePath;
 
 	private String createFileName(CreateReportParametersDto parameters) {
@@ -42,15 +52,37 @@ public class CsvFileService {
 	public String saveReportToFile(CreateReportParametersDto parameters, List<CovidDataEntity> data) {
 		String fileName = createFileName(parameters);
 
-		/*
-		TODO:
-			- build full file path as: this.basePath + "/" + fileName
-			- create CSVPrinter (just see example in the 'FileService' class from lections)
-			- write the HEADER line to the file;
-			- write data lines
-		 */
+        String fullFileName = this.basePath + "/" + fileName;
 
-		return fileName;  // return new file's name
+        try (FileWriter fileWriter = new FileWriter(fullFileName)) {
+            try (CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT)) {
+
+                csvPrinter.printRecord(HEADER);
+
+                // Print rows:
+                for (CovidDataEntity row : data) {
+                    csvPrinter.printRecord(
+                            row.getDateYear(),
+                            row.getDateMonth(),
+                            row.getDateDay(),
+                            row.getLatitude(),
+                            row.getLongitude(),
+                            row.getCountryRegion(),
+                            row.getProvinceState(),
+                            row.getConfirmedDiff(),
+                            row.getRecoveredDiff(),
+                            row.getDeathsDiff()
+                    );
+                }
+
+            } catch (IOException e) {
+                LOGGER.error("Error While writing CSV", e);
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error While creating file writer", e);
+        }
+
+		return fullFileName;  // return new file's name
 	}
 
 	/**
